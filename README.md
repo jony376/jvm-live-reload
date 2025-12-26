@@ -96,7 +96,7 @@ change in your application to make it live-reloading-ready:
 > [!NOTE]
 > This plugin makes your application run in a non-forked JVM. If your application
 > somehow relies on running inside an isolated JVM process, you should ensure that 
-> this change won’t cause any issues. In most cases, however, you probably won’t even
+> it won’t cause any issues. In most cases, however, you probably won’t even
 > notice a difference.
 <!-- prettier-ignore-end -->
 
@@ -119,7 +119,7 @@ implements interrupting and graceful shutdown correctly.
 Add a plugin to `project/plugins.sbt` using:
 
 ```scala
-addSbtPlugin("me.seroperson" % "sbt-live-reload" % "0.0.1")
+addSbtPlugin("me.seroperson" % "sbt-live-reload" % "0.0.2")
 ```
 
 And enable the plugin on your web application:
@@ -135,7 +135,7 @@ The command to run your application in live-reloading mode is `sbt run`.
 Add a plugin to your `build.gradle.kts` using:
 
 ```kotlin
-id("me.seroperson.reload.live.gradle") version "0.0.1"
+id("me.seroperson.reload.live.gradle") version "0.0.2"
 ```
 
 The command to run your application in live-reloading mode is
@@ -147,7 +147,7 @@ Add plugin dependency at the top of `build.mill`:
 
 ```scala
 //| mvnDeps:
-//| - me.seroperson::mill-live-reload::0.0.1
+//| - me.seroperson::mill-live-reload::0.0.2
 ```
 
 And make your application module extend `LiveReloadModule`:
