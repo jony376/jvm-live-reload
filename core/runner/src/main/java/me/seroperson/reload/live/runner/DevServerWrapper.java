@@ -2,28 +2,45 @@ package me.seroperson.reload.live.runner;
 
 import me.seroperson.reload.live.build.ReloadableServer;
 import me.seroperson.reload.live.reflect.Environment;
+import me.seroperson.reload.live.reflect.ShutdownHook;
+import me.seroperson.reload.live.build.BuildLogger;
 
+import java.util.IdentityHashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.util.Map;
+import java.util.HashMap;
 
 public class DevServerWrapper implements ReloadableServer {
 
     private final StartParams params;
+    private final BuildLogger logger;
     private final ReloadableServer server;
 
+    // Preserving initial environment state
     private Map<String, String> initialEnv;
+    // Preserving build-system shutdown hooks
+    private Map<Thread, Thread> buildSystemShutdownHooks;
+    private Set<Long> buildSystemHookThreadIds;
 
-    public DevServerWrapper(StartParams params, ReloadableServer server) {
+    public DevServerWrapper(StartParams params, BuildLogger logger, ReloadableServer server) {
         this.params = params;
+        this.logger = logger;
         this.server = server;
     }
 
     @Override
     public void start() {
-        this.initialEnv = System.getenv();
-
+        this.initialEnv = new HashMap<>(System.getenv());
         var propagateEnv = params.getPropagateEnv();
         Environment.putEnv(propagateEnv);
+
+        this.buildSystemShutdownHooks = new IdentityHashMap<>(ShutdownHook.getRegistredShutdownHooks());
+        this.buildSystemHookThreadIds = buildSystemShutdownHooks.keySet().stream().map(Thread::getId).collect(Collectors.toSet());
+        logger.debug("Preserving shutdown hooks:");
+        ShutdownHook.logShutdownHooks(buildSystemShutdownHooks, logger);
+        ShutdownHook.unregisterShutdownHooks(buildSystemHookThreadIds);
 
         server.start();
     }
@@ -44,6 +61,7 @@ public class DevServerWrapper implements ReloadableServer {
             server.close();
         } finally {
             Environment.setEnv(initialEnv);
+            ShutdownHook.setShutdownHooks(new IdentityHashMap<>(buildSystemShutdownHooks));
         }
     }
 

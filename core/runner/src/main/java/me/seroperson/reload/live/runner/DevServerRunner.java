@@ -104,7 +104,7 @@ public final class DevServerRunner {
               params.getInternalMainClassName(),
               params.getStartupHookClasses(),
               params.getShutdownHookClasses());
-      var wrapper = new DevServerWrapper(params, server);
+      var wrapper = new DevServerWrapper(params, logger, server);
       wrapper.start();
       return wrapper;
     } catch (Throwable e) {
