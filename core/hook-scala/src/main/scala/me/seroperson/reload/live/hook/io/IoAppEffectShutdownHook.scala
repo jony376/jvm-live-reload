@@ -1,12 +1,12 @@
 package cats.effect
 
 import cats.effect.unsafe.IORuntime
-
 import java.lang.management.ManagementFactory
 import javax.management.ObjectName
 import me.seroperson.reload.live.build.BuildLogger
 import me.seroperson.reload.live.hook.Hook
-import me.seroperson.reload.live.reflect.{MiscUtils, ShutdownHook}
+import me.seroperson.reload.live.reflect.MiscUtils
+import me.seroperson.reload.live.reflect.ShutdownHook
 import me.seroperson.reload.live.settings.DevServerSettings
 
 /** Shutdown hook specifically designed for Cats Effect IOApp applications.

@@ -3,7 +3,8 @@ package me.seroperson.reload.live.hook.zio;
 import me.seroperson.reload.live.build.BuildLogger
 import me.seroperson.reload.live.hook.Hook
 import me.seroperson.reload.live.hook.zio.ZioAppStartupHook.PermanentThreadNames
-import me.seroperson.reload.live.reflect.{MiscUtils, ShutdownHook}
+import me.seroperson.reload.live.reflect.MiscUtils
+import me.seroperson.reload.live.reflect.ShutdownHook
 import me.seroperson.reload.live.settings.DevServerSettings
 
 class ZioAppStartupHook extends Hook {
@@ -25,7 +26,10 @@ class ZioAppStartupHook extends Hook {
     // because they usually survive reload
     MiscUtils.updateContextClassLoader(
       th.getThreadGroup,
-      v => Option(v).exists(nn => PermanentThreadNames.exists(nn.getName.startsWith)),
+      v =>
+        Option(v).exists(nn =>
+          PermanentThreadNames.exists(nn.getName.startsWith)
+        ),
       cl
     )
     logger.debug(

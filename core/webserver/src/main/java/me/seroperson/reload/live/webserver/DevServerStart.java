@@ -79,29 +79,29 @@ public class DevServerStart implements ReloadableServer {
     createCurrentGenerationWorker();
 
     this.proxyClientProvider =
-            new ReloadableProxyClient(
-                    logger, URI.create("http://" + settings.getHttpHost() + ":" + settings.getHttpPort()));
+        new ReloadableProxyClient(
+            logger, URI.create("http://" + settings.getHttpHost() + ":" + settings.getHttpPort()));
     this.proxyClientProvider.setCurrentGenerationWorker(currentGenerationWorker);
 
     // @formatter:off
     var proxyHandler =
-            new ProxyHandler(
-                    proxyClientProvider,
-                    /* maxRequestTime */ -1,
-                    ResponseCodeHandler.HANDLE_404,
-                    /* rewriteHostHeader */ false,
-                    /* reuseXForwarded */ false,
-                    2);
+        new ProxyHandler(
+            proxyClientProvider,
+            /* maxRequestTime */ -1,
+            ResponseCodeHandler.HANDLE_404,
+            /* rewriteHostHeader */ false,
+            /* reuseXForwarded */ false,
+            2);
     // @formatter:on
 
     var handler = new ReloadHandler(logger, this, proxyHandler);
 
     server =
-            Undertow.builder()
-                    .addHttpListener(settings.getProxyHttpPort(), settings.getProxyHttpHost())
-                    .setHandler(handler)
-                    .setServerOption(UndertowOptions.SHUTDOWN_TIMEOUT, 1000)
-                    .build();
+        Undertow.builder()
+            .addHttpListener(settings.getProxyHttpPort(), settings.getProxyHttpHost())
+            .setHandler(handler)
+            .setServerOption(UndertowOptions.SHUTDOWN_TIMEOUT, 1000)
+            .build();
     server.start();
 
     appThreadGroup = new ThreadGroup("app");
@@ -123,8 +123,9 @@ public class DevServerStart implements ReloadableServer {
   }
 
   private synchronized void startInternal(ReloadGeneration generation) {
-    if(!isRunning.get()) {
-      throw new UnrecoverableException("Unable to start underlying application without a running proxy.");
+    if (!isRunning.get()) {
+      throw new UnrecoverableException(
+          "Unable to start underlying application without a running proxy.");
     }
 
     createCurrentGenerationWorker();
@@ -263,12 +264,12 @@ public class DevServerStart implements ReloadableServer {
   private void dumpHooks() {
     logger.debug("Found " + startupHooks.size() + " startup hooks:");
     startupHooks.stream()
-            .map((v) -> "- " + v.getClass().getSimpleName() + ": " + v.description())
-            .forEach(logger::debug);
+        .map((v) -> "- " + v.getClass().getSimpleName() + ": " + v.description())
+        .forEach(logger::debug);
     logger.debug("Found " + shutdownHooks.size() + " shutdown hooks:");
     shutdownHooks.stream()
-            .map((v) -> "- " + v.getClass().getSimpleName() + ": " + v.description())
-            .forEach(logger::debug);
+        .map((v) -> "- " + v.getClass().getSimpleName() + ": " + v.description())
+        .forEach(logger::debug);
   }
 
   // Shameful copy-n-paste from cask.main.Main.silenceJboss

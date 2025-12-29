@@ -2,7 +2,8 @@ package me.seroperson.reload.live.hook.io;
 
 import me.seroperson.reload.live.build.BuildLogger
 import me.seroperson.reload.live.hook.Hook
-import me.seroperson.reload.live.reflect.{MiscUtils, ShutdownHook}
+import me.seroperson.reload.live.reflect.MiscUtils
+import me.seroperson.reload.live.reflect.ShutdownHook
 import me.seroperson.reload.live.settings.DevServerSettings
 
 /** Startup hook for Cats Effect IOApp applications.

@@ -74,7 +74,7 @@ open class LiveReloadRunHandle
                         params.mainClass,
                         params.startupHooks,
                         params.shutdownHooks,
-                        params.propagateEnv
+                        params.propagateEnv,
                     )
 
                 val buildLogger = LiveReloadLogger()

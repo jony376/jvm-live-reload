@@ -1,6 +1,5 @@
 package me.seroperson.reload.live.hook;
 
-import java.util.Map;
 import java.util.IdentityHashMap;
 import me.seroperson.reload.live.build.BuildLogger;
 import me.seroperson.reload.live.reflect.ShutdownHook;

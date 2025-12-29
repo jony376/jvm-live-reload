@@ -110,16 +110,18 @@ class ReloadableProxyClient implements ProxyClient {
       final ServerConnection serverConnection = exchange.getConnection();
       serverConnection.putAttachment(clientAttachmentKey, connection);
       serverConnection.addCloseListener(
-              serverConnection1 -> {
-                  IoUtils.safeClose(connection);
-                  logger.debug("Closing server proxy connection for path " + exchange.getRequestPath());
-              });
+          serverConnection1 -> {
+            IoUtils.safeClose(connection);
+            logger.debug("Closing server proxy connection for path " + exchange.getRequestPath());
+          });
       connection
           .getCloseSetter()
           .set(
-                  (ChannelListener<Channel>) channel -> {
-                      serverConnection.removeAttachment(clientAttachmentKey);
-                      logger.debug("Closing client proxy connection for path " + exchange.getRequestPath());
+              (ChannelListener<Channel>)
+                  channel -> {
+                    serverConnection.removeAttachment(clientAttachmentKey);
+                    logger.debug(
+                        "Closing client proxy connection for path " + exchange.getRequestPath());
                   });
       var path = uri.getPath() == null ? "/" : uri.getPath();
       callback.completed(exchange, new ProxyConnection(connection, path));

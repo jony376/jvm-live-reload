@@ -3,9 +3,9 @@ package me.seroperson.reload.live.webserver;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.AttachmentKey;
+import me.seroperson.reload.live.UnrecoverableException;
 import me.seroperson.reload.live.build.BuildLogger;
 import me.seroperson.reload.live.build.ReloadableServer;
-import me.seroperson.reload.live.UnrecoverableException;
 
 class ReloadHandler implements HttpHandler {
 

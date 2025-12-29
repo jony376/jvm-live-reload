@@ -1,14 +1,9 @@
 package me.seroperson.reload.live.reflect;
 
-import me.seroperson.reload.live.UnrecoverableException;
-
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import me.seroperson.reload.live.UnrecoverableException;
 
 public final class Environment {
 
@@ -21,8 +16,10 @@ public final class Environment {
   }
 
   // Copied and edited from:
-  // - https://github.com/Philippus/sbt-dotenv/blob/main/src/main/scala/au/com/onegeek/sbtdotenv/DirtyEnvironmentHack.scala
-  // - https://stackoverflow.com/questions/318239/how-do-i-set-environment-variables-from-java/7201825#7201825
+  // -
+  // https://github.com/Philippus/sbt-dotenv/blob/main/src/main/scala/au/com/onegeek/sbtdotenv/DirtyEnvironmentHack.scala
+  // -
+  // https://stackoverflow.com/questions/318239/how-do-i-set-environment-variables-from-java/7201825#7201825
   @SuppressWarnings("unchecked")
   private static void updateEnv(boolean clear, Map<String, String> newEnv) {
     try {
@@ -62,7 +59,7 @@ public final class Environment {
         env.putAll(newEnv);
 
         var theCaseInsensitiveEnvironmentField =
-                processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
+            processEnvironmentClass.getDeclaredField("theCaseInsensitiveEnvironment");
         theCaseInsensitiveEnvironmentField.setAccessible(true);
         var cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
         if (clear) {
@@ -97,5 +94,4 @@ public final class Environment {
   private static boolean hasProcessVariableClass() {
     return MiscUtils.hasClass("java.lang.ProcessEnvironment$Variable");
   }
-
 }

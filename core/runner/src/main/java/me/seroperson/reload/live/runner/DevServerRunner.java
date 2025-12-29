@@ -96,14 +96,15 @@ public final class DevServerRunner {
               String.class,
               List.class,
               List.class);
-      var server = (ReloadableServer)
-          constructor.newInstance(
-              params.getSettings(),
-              reloader,
-              logger,
-              params.getInternalMainClassName(),
-              params.getStartupHookClasses(),
-              params.getShutdownHookClasses());
+      var server =
+          (ReloadableServer)
+              constructor.newInstance(
+                  params.getSettings(),
+                  reloader,
+                  logger,
+                  params.getInternalMainClassName(),
+                  params.getStartupHookClasses(),
+                  params.getShutdownHookClasses());
       var wrapper = new DevServerWrapper(params, logger, server);
       wrapper.start();
       return wrapper;

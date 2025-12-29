@@ -9,5 +9,5 @@ class LiveReloadRunParams(
     val mainClass: String,
     val startupHooks: List<String>,
     val shutdownHooks: List<String>,
-    val propagateEnv: Map<String, String>
+    val propagateEnv: Map<String, String>,
 )

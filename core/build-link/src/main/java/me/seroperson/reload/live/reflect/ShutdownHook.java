@@ -89,5 +89,4 @@ public final class ShutdownHook {
       throw new RuntimeException(e);
     }
   }
-
 }
