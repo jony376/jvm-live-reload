@@ -121,7 +121,7 @@ implements interrupting and graceful shutdown correctly.
 Add a plugin to `project/plugins.sbt` using:
 
 ```scala
-addSbtPlugin("me.seroperson" % "sbt-live-reload" % "0.1.0")
+addSbtPlugin("me.seroperson" % "sbt-live-reload" % "0.1.1")
 ```
 
 And enable the plugin on your web application:
@@ -137,7 +137,7 @@ The command to run your application in live-reloading mode is `sbt run`.
 Add a plugin to your `build.gradle.kts` using:
 
 ```kotlin
-id("me.seroperson.reload.live.gradle") version "0.1.0"
+id("me.seroperson.reload.live.gradle") version "0.1.1"
 ```
 
 The command to run your application in live-reloading mode is
@@ -149,7 +149,7 @@ Add plugin dependency at the top of `build.mill`:
 
 ```scala
 //| mvnDeps:
-//| - me.seroperson::mill-live-reload::0.1.0
+//| - me.seroperson::mill-live-reload::0.1.1
 ```
 
 And make your application module extend `LiveReloadModule`:
