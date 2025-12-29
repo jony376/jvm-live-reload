@@ -133,4 +133,36 @@ class IntegrationTests extends AnyFunSuite {
     assert(greet && greetReloaded)
   }
 
+  test("http4s-with-resources") {
+    val resourceDir = os.Path(BuildInfo.resourceDir) / "http4s-with-resources"
+
+    val tester = new IntegrationTester(
+      daemonMode = false,
+      workspaceSourcePath = resourceDir,
+      millExecutable = os.Path(BuildInfo.exePath),
+      // debugLog = true
+    )
+
+    val runThread = new Thread(new Runnable() {
+      override def run(): Unit = {
+        tester.eval(
+          "app.liveReloadRun",
+          env = Map("PLUGIN_VERSION" -> BuildInfo.version),
+          stdout = ProcessOutput.Readlines(v => println(v)),
+          mergeErrIntoOut = true
+        )
+      }
+    })
+    runThread.start()
+
+    val greet = runUntil("http://localhost:9000/greet", 200, "Hello World 1")
+    tester.modifyFile(tester.workspacePath / "app" / "src" / "App.scala", _ => os.read(resourceDir / "changes" / "App.scala.1"))
+    tester.modifyFile(tester.workspacePath / "app" / "resources" / "application.conf", _ => os.read(resourceDir / "changes" / "application.conf.1"))
+    val greetReloaded = runUntil("http://localhost:9000/greet_reloaded", 200, "World Hello 2")
+
+    tester.close()
+
+    assert(greet && greetReloaded)
+  }
+
 }

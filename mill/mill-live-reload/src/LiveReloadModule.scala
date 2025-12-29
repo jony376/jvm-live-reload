@@ -79,24 +79,27 @@ trait LiveReloadModule extends JavaModule {
     )
 
     val reloadCompile: Supplier[CompileResult] = () => {
-      eval.execute(Seq(compile)) match {
-        case Evaluator.Result(watched, Result.Failure(err), _, _) =>
+      eval.execute(Seq(compile, runClasspath)) match {
+        case Evaluator.Result(_, Result.Failure(err), _, _) =>
           new CompileFailure(new Throwable(err))
 
         case Evaluator.Result(
-              watched,
+              /* watched */ _,
               Result.Success(_),
               selectedTasks,
               executionResults
             ) =>
-          val allClasses = executionResults.transitiveResults.flatMap {
-            case (key, value) =>
-              value.asSuccess.map(_.value.value).collect {
-                case x: CompilationResult =>
-                  x.classes.path.toIO
-              }
-          }
-          new CompileSuccess(allClasses.toList.asJava)
+          val runClasspathTask = selectedTasks.last
+          val classpath = executionResults.transitiveResults
+            .collect {
+              case (key, value) if key == runClasspathTask =>
+                value.asSuccess.map(_.value.value).map { result =>
+                  result.asInstanceOf[Seq[PathRef]].map(_.path.toIO)
+                }
+            }
+            .flatten
+            .flatten
+          new CompileSuccess(classpath.toList.asJava)
       }
     }
 
