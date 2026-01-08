@@ -12,6 +12,7 @@ version.txt
 .gradle/
 .kotlin/
 gradle/**/build
+build/
 
 # IDE stuff
 .idea/

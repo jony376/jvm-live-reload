@@ -1,0 +1,164 @@
+//| mill-version: 1.1.0-RC2
+//| mill-jvm-version: system
+//| mvnDeps: ["com.lihaoyi::mill-contrib-buildinfo:$MILL_VERSION"]
+
+package build
+
+// @formatter:off
+import mill.*, javalib.*, javalib.publish, scalalib.*, scalalib.publish.*
+import mill.api.BuildCtx
+import mill.api.Task.Simple
+import mill.contrib.buildinfo.BuildInfo
+import mill.scalalib.scalafmt.ScalafmtModule
+import mill.util.BuildInfo.millBinPlatform
+import mill.util.BuildInfo.millVersion
+// @formatter:on
+
+val scala212 = "2.12.20"
+val scala213 = "2.13.16"
+val scala3 = "3.7.2"
+val supportedScalaVersions = Seq(scala212, scala213, scala3)
+
+trait CorePublishModule extends SonatypeCentralPublishModule {
+
+  def readVersionFromRepo = Task.Input {
+    os.read(BuildCtx.workspaceRoot / "version.txt").trim()
+  }
+
+  override def publishVersion = readVersionFromRepo
+
+  override def pomSettings = PomSettings(
+    description = artifactName(),
+    organization = "me.seroperson",
+    url = "https://github.com/seroperson/jvm-live-reload",
+    licenses = Seq(License.MIT),
+    versionControl = VersionControl.github("seroperson", "jvm-live-reload"),
+    developers =
+      Seq(Developer("seroperson", "Daniil Sivak", "https://seroperson.me/"))
+  )
+}
+
+object `build-link` extends JavaModule with CorePublishModule {
+
+  override def artifactName = "jvm-live-reload-build-link"
+
+  override def sources = Task.Sources(
+    BuildCtx.workspaceRoot / "core" / "build-link" / "src" / "main" / "java"
+  )
+}
+
+object `runner-module` extends JavaModule with CorePublishModule {
+
+  override def artifactName = "jvm-live-reload-runner"
+
+  override def moduleDeps = Seq(`build-link`)
+
+  override def sources = Task.Sources(
+    BuildCtx.workspaceRoot / "core" / "runner" / "src" / "main" / "java"
+  )
+
+  override def mvnDeps = Seq(
+    mvn"org.playframework:play-file-watch:3.0.0-M4",
+    mvn"org.jline:jline:3.30.6"
+  )
+}
+
+object webserver extends JavaModule with CorePublishModule {
+
+  override def artifactName = "jvm-live-reload-webserver"
+
+  override def moduleDeps = Seq(`build-link`)
+
+  override def sources = Task.Sources(
+    BuildCtx.workspaceRoot / "core" / "webserver" / "src" / "main" / "java"
+  )
+
+  override def mvnDeps = Seq(
+    mvn"io.undertow:undertow-core:2.3.20.Final"
+  )
+}
+
+object `hook-scala` extends Cross[HookScalaModule](supportedScalaVersions)
+
+trait HookScalaModule
+    extends ScalaModule
+    with CorePublishModule
+    with Cross.Module[String] {
+
+  override def scalaVersion = crossValue
+
+  override def artifactName = "jvm-live-reload-hook-scala"
+
+  override def moduleDeps = Seq(`build-link`)
+
+  override def sources = Task.Sources(
+    BuildCtx.workspaceRoot / "core" / "hook-scala" / "src" / "main" / "scala"
+  )
+
+  override def compileMvnDeps = Seq(
+    mvn"dev.zio::zio:2.1.24",
+    mvn"org.typelevel::cats-effect:3.6.3"
+  )
+}
+
+object `mill-live-reload`
+    extends ScalaModule,
+      CorePublishModule,
+      BuildInfo,
+      ScalafmtModule {
+
+  override def scalaVersion = "3.7.3"
+
+  override def platformSuffix = s"_mill$millBinPlatform"
+
+  override def moduleDir = BuildCtx.workspaceRoot / "mill"
+
+  override def moduleDeps = Seq(`runner-module`, webserver)
+
+  override def mvnDeps = Seq(
+    mvn"com.lihaoyi::mill-libs:$millVersion",
+    mvn"org.jline:jline:3.30.6"
+  )
+
+  override def scalafmtConfig: T[Seq[PathRef]] = Task.Sources(
+    BuildCtx.workspaceRoot / ".scalafmt.conf"
+  )
+
+  object integration extends ScalaTests, TestModule.ScalaTest, BuildInfo {
+
+    override def scalaTestVersion = "3.2.19"
+
+    override def mvnDeps = Seq(
+      mvn"com.lihaoyi::mill-testkit:$millVersion",
+      mvn"com.squareup.okhttp3:okhttp-jvm:5.2.1"
+    )
+
+    override def resources: T[Seq[PathRef]] = Task {
+      super[ScalaTests].resources() ++ Seq(buildInfoResources())
+    }
+
+    override def buildInfoPackageName = "me.seroperson.reload.live.mill.test"
+
+    override def buildInfoMembers = Seq(
+      BuildInfo.Value(
+        "resourceDir",
+        super[ScalaTests].resources().iterator.map(_.path).mkString(";")
+      ),
+      BuildInfo.Value("exePath", millExecutable.assembly().path.toString),
+      BuildInfo.Value("version", readVersionFromRepo())
+    )
+
+    // Create a Mill executable configured for testing our plugin
+    object millExecutable extends JavaModule {
+      def mvnDeps = Seq(mvn"com.lihaoyi:mill-runner-launcher_3:$millVersion")
+      def mainClass = Some("mill.launcher.MillLauncherMain")
+    }
+  }
+
+  override def buildInfoPackageName = "me.seroperson.reload.live.mill"
+
+  override def buildInfoMembers = Seq(
+    BuildInfo.Value("version", readVersionFromRepo())
+  )
+
+}

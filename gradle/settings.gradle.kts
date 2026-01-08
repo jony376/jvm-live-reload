@@ -1,3 +1,0 @@
-includeBuild("plugin")
-
-includeBuild("example")
