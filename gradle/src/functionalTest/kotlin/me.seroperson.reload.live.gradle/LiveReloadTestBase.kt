@@ -12,13 +12,16 @@ abstract class LiveReloadTestBase {
     fun initGradleRunner(
         command: String,
         projectDir: File,
+        env: Map<String, String> = mapOf(),
     ): GradleRunner {
         val runner = GradleRunner.create()
         runner.forwardOutput()
         runner.withGradleVersion("8.14.3")
         runner.withPluginClasspath()
         runner.withProjectDir(projectDir)
-        runner.withEnvironment(mapOf("GRADLE_OPTS" to "--add-opens=java.base/java.nio=ALL-UNNAMED"))
+        runner.withEnvironment(
+            mapOf("GRADLE_OPTS" to "--add-opens=java.base/java.nio=ALL-UNNAMED") + env,
+        )
         runner.withArguments(
             command,
             "--info",

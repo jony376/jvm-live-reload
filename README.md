@@ -438,9 +438,9 @@ whether their own setup will work.
     <td>Everything from <a href="#changes-to-the-application-code">this section</a>.</td>
   </tr>
   <tr>
-    <td><a href="https://github.com/javalin/javalin">javalin</a></td>
-    <td><i>javalin</i> <b>6.7.0</b></td>
-    <td><a href="https://github.com/seroperson/jvm-live-reload/blob/main/gradle/plugin/plugin/src/functionalTest/kotlin/me.seroperson.reload.live.gradle/LiveReloadJavalinTest.kt">LiveReloadHttp4kTest.kt</a></td>
+    <td><a href="https://github.com/javalin/javalin">javalin</a>, <a href="https://github.com/casid/jte">jte</a></td>
+    <td><i>javalin</i> <b>6.7.0</b>, <i>jte</i> <b>3.2.2</b></td>
+    <td><a href="https://github.com/seroperson/jvm-live-reload/blob/main/gradle/plugin/plugin/src/functionalTest/kotlin/me.seroperson.reload.live.gradle/LiveReloadJavalinTest.kt">LiveReloadJavalinTest.kt</a>, <a href="https://github.com/seroperson/jvm-live-reload/blob/main/gradle/plugin/plugin/src/functionalTest/kotlin/me.seroperson.reload.live.gradle/LiveReloadJavalinJteTest.kt">LiveReloadJavalinJteTest.kt</a></td>
     <td>Everything from <a href="#changes-to-the-application-code">this section</a>.</td>
   </tr>
 </table>
