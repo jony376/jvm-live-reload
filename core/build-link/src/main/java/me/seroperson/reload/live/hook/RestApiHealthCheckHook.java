@@ -13,9 +13,20 @@ import me.seroperson.reload.live.build.BuildLogger;
  */
 interface RestApiHealthCheckHook extends HealthCheckHook {
 
+  /**
+   * Ensures REST health probes use a path segment (e.g. {@code /health}), not {@code health}.
+   */
+  default String normalizeHealthCheckPath(String path) {
+    if (path == null || path.isEmpty()) {
+      return path;
+    }
+    return path.startsWith("/") ? path : "/" + path;
+  }
+
   default int isHealthy(BuildLogger logger, String path, String host, int port) {
     try {
-      var url = new URI("http://" + host + ":" + port + path).toURL();
+      var normalizedPath = normalizeHealthCheckPath(path);
+      var url = new URI("http://" + host + ":" + port + normalizedPath).toURL();
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestProperty("Connection", "close");
       connection.setReadTimeout(500);
